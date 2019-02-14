@@ -37,14 +37,19 @@ export default class HomeScreen extends React.Component {
               source={require("../assets/images/ScanBackground.jpg")}
               style = {styles.scanImage}
               imageStyle = {{resizeMode: 'stretch'}}>
+            
+              <View style={styles.buttonContainer}>
+                <Text style={styles.infoText}>Look for sustainable options</Text>
 
-              <Button 
-                color="#ffffff"
-                title="Scan an item"
-                onPress={()=>{
-                  console.log("scanning....");
-                }}>
-              </Button>
+                <TouchableOpacity style={styles.scanButton}>
+                  <Text style={styles.homeButtonText}>scan clothes</Text>
+                </TouchableOpacity>
+                
+                <Text style={styles.infoText}>Look at saved recommendations</Text>
+                <TouchableOpacity style={styles.closetButton}>
+                  <Text style={styles.homeButtonText}>my closet</Text>
+                </TouchableOpacity>
+              </View>
             </ImageBackground>
           </View>
         </View>
@@ -87,12 +92,35 @@ export default class HomeScreen extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  buttonContainer: {
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+
+  closetButton: {
+    backgroundColor: '#486556',
+    borderRadius: 8,
+    color: "#ffffff",
+    height: 50,
+    width: 288,
+    marginTop: 50
+
+  },
+
   content: {
     alignItems: 'center'
   },
 
   contentContainer: {
     backgroundColor: '#ffffff',
+  },
+
+  infoText: {
+    color: '#ffffff',
+    fontFamily: 'roboto-bold-italic',
+    fontSize: 25,
+    paddingTop: 100,
+
   },
 
   navBar: {
@@ -113,14 +141,34 @@ const styles = StyleSheet.create({
     flex: 1,
     fontFamily: 'abril-fatface',
     fontSize: 50,
+    letterSpacing: 5,
     paddingTop: 15,
-    marginRight: 50,
     textAlign: 'center',
   },
 
   phoneInfoContainer: {
     backgroundColor: "#3c4858",
     height: 20,
+  },
+
+  scanButton: {
+    backgroundColor: "#486556",
+    borderRadius: 8,
+    color: "#ffffff",
+    height: 50,
+    marginTop: 50,
+    width: 288
+  },
+
+  homeButtonText: {
+    color: '#ffffff',
+    fontFamily: 'roboto-reg',
+    fontSize: 20,
+    letterSpacing: 5,
+    textAlign: 'center',
+    paddingTop: 14.5,
+    paddingBottom: 15
+    
   },
 
   scanImage: {
