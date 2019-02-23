@@ -14,6 +14,8 @@ import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
 
+import {createStackNavigator, createAppContainer} from 'react-navigation';
+
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
@@ -42,7 +44,9 @@ export default class HomeScreen extends React.Component {
                 <Text style={styles.infoText}>Look for sustainable options</Text>
 
                 <TouchableOpacity style={styles.scanButton}>
-                  <Text style={styles.homeButtonText}>scan clothes</Text>
+                  <Text 
+                    style={styles.homeButtonText} 
+                    onPress={()=> this.props.navigation.navigate("Option")}>scan clothes</Text>
                 </TouchableOpacity>
                 
                 <Text style={styles.infoText}>Look at saved recommendations</Text>
@@ -166,7 +170,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     letterSpacing: 5,
     textAlign: 'center',
-    paddingTop: 14.5,
+    paddingTop: 13,
     paddingBottom: 15
     
   },
