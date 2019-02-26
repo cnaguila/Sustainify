@@ -2,16 +2,17 @@ import React from 'react';
 import {
   Button,
   Image,
+  ImageStore,
+  ImageEditor,
   ImageBackground,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
   TouchableOpacity,
-  View,
+  View
 } from 'react-native';
 import { WebBrowser } from 'expo';
-
 import { MonoText } from '../components/StyledText';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {createStackNavigator, createAppContainer} from 'react-navigation';
@@ -55,15 +56,24 @@ export default class HomeScreen extends React.Component {
     if (this.camera) {
       console.log('take picture');
       this.camera.takePictureAsync({onPictureSaved: (result)=> {
-        
-        app.models.predict(Clarifai.GENERAL_MODEL, result['uri'])
-          .then(response => {
-            console.log(response["status"]["code"]);
-          })
-          .catch(err=> {
-            console.log(err);
-          });
-        //this.props.navigation.navigate("Display", {image: result["uri"]})
+        var image = result['uri'];
+        Image.getSize(image, (width, height) => {
+            let imageSettings = {
+                offset: {x: 0, y: 0},
+                size: {width: width, height: height}
+            };
+
+            ImageEditor.cropImage(image, imageSettings, (uri) => {
+                ImageStore.getBase64ForTag(uri, (data) => {
+                    app.models.predict(Clarifai.APPAREL_MODEL, {base64: data}).then(
+                        function(response) {
+                            console.log(response.outputs[0].data);
+                        }
+                    );
+                }, e => console.warn("getBased64ForTag: ", e))
+            }, e => console.warn("cropImage: ", e))
+        })
+
         return result;
       }});
     }
