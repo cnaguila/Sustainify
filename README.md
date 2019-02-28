@@ -1,3 +1,3 @@
 # Sustainify
 
-run npm install color-namer 
+npm install color-namer 
