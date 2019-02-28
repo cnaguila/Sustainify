@@ -12,19 +12,19 @@ import {
   TouchableOpacity,
   View
 } from 'react-native';
-import { WebBrowser } from 'expo';
+import { WebBrowser, Camera, Permissions } from 'expo';
 import { MonoText } from '../components/StyledText';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import {createStackNavigator, createAppContainer} from 'react-navigation';
-import { Camera, Permissions, } from 'expo';
+import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 
+import Environment from "../config/environment";
 const Clarifai = require('clarifai');
 
 const app = new Clarifai.App({
     apiKey: 'd43e615790234f3ab5acce84ba3bd55f'
 });
 
-// import clarifaiApi from '../backend/clarifaiApi';
+
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -36,19 +36,73 @@ export default class HomeScreen extends React.Component {
     hasCameraPermission: null,
     type: Camera.Constants.Type.back,
     pictureTaken: false,
+    googleResponse: null,
+    clothesType: null,
   };
 
+  //makes API call to Clarifai and Google for image colors & style detection
+  submitToClarifai = (result) =>{
+    var image = result;
+    Image.getSize(image, (width, height) => {
+        let imageSettings = {
+            offset: {x: 0, y: 0},
+            size: {width: width, height: width}
+        };
+
+        ImageEditor.cropImage(image, imageSettings, (uri) => {
+            ImageStore.getBase64ForTag(uri, (data) => {
+                //this.submitToGoogle(data);
+                app.models.predict(Clarifai.APPAREL_MODEL, {base64: data}).then(
+                    function(response) {
+                      console.log("Clarifai result: "+ response.outputs[0].data.concepts[0].name);
+                      console.log("Clarifai result value: "+response.outputs[0].data.concepts[0].value);
+                    }
+                );
+            }, e => console.warn("getBased64ForTag: ", e))
+        }, e => console.warn("cropImage: ", e))
+    })
+  }
+
+  //makes api call to google to retrieve image colors
+  submitToGoogle = async (encoded_content) => {
+    try {
+      this.setState({ uploading: true });
+      //let { image } = this.state;
+      let body = JSON.stringify({
+        requests: [
+          {
+            features: [
+              { type: "IMAGE_PROPERTIES", maxResults: 5 },
+            ],
+            image: {
+              content: encoded_content
+            }
+          }
+        ]
+      });
+      let response = await fetch(
+        "https://vision.googleapis.com/v1/images:annotate?key=" +
+          Environment["GOOGLE_CLOUD_VISION_API_KEY"],
+        {
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json"
+          },
+          method: "POST",
+          body: body
+        }
+      );
+      let responseJson = await response.json();
+      console.log(responseJson);
+      this.setState({
+        googleResponse: responseJson,
+        uploading: false
+      });
+    } catch (error) {
+      console.log(error);
+    }
+  };
   
-
-  handlePictureTaken = () => {
-    //1: get picture, pass result as a base64 string
-    //2: navigate forward to the next screen 
-    //3: for now, display image on next screen
-
-    result = this.takePicture();
-    //this.props.navigation.navigate("Display", {image: result})
-  };
-
   takePicture = () => {
     this.setState({
       pictureTaken: true,
@@ -57,24 +111,7 @@ export default class HomeScreen extends React.Component {
       console.log('take picture');
       this.camera.takePictureAsync({onPictureSaved: (result)=> {
         var image = result['uri'];
-        Image.getSize(image, (width, height) => {
-            let imageSettings = {
-                offset: {x: 0, y: 0},
-                size: {width: width, height: height}
-            };
-
-            ImageEditor.cropImage(image, imageSettings, (uri) => {
-                ImageStore.getBase64ForTag(uri, (data) => {
-                    app.models.predict(Clarifai.APPAREL_MODEL, {base64: data}).then(
-                        function(response) {
-                            console.log(response.outputs[0].data);
-                        }
-                    );
-                }, e => console.warn("getBased64ForTag: ", e))
-            }, e => console.warn("cropImage: ", e))
-        })
-
-        return result;
+        this.submitToClarifai(image);
       }});
     }
   };
