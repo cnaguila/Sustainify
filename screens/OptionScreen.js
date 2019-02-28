@@ -1,3 +1,6 @@
+//https://medium.com/@mlapeter/using-google-cloud-vision-with-expo-and-react-native-7d18991da1dd
+
+
 import React from 'react';
 import {
   Button,
@@ -5,6 +8,7 @@ import {
   ImageStore,
   ImageEditor,
   ImageBackground,
+  Modal,
   Platform,
   ScrollView,
   StyleSheet,
@@ -15,10 +19,16 @@ import {
 import { WebBrowser, Camera, Permissions } from 'expo';
 import { MonoText } from '../components/StyledText';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 
+import Chroma from 'chroma-js';
 import Environment from "../config/environment";
+
+
+var namer = require('color-namer');
+
 const Clarifai = require('clarifai');
+
+
 
 const app = new Clarifai.App({
     apiKey: 'd43e615790234f3ab5acce84ba3bd55f'
@@ -38,6 +48,32 @@ export default class HomeScreen extends React.Component {
     pictureTaken: false,
     googleResponse: null,
     clothesType: null,
+    colorName: null,
+    modalVisible: false,
+  };
+
+  //modal functions
+  setModalVisible(visible) {
+    this.setState({modalVisible: visible});
+  }
+
+  //turns rgb to hex
+  //https://campushippo.com/lessons/how-to-convert-rgb-colors-to-hexadecimal-with-javascript-78219fdb
+  rgbToHex = function (rgb) { 
+    var hex = Number(rgb).toString(16);
+    if (hex.length < 2) {
+         hex = "0" + hex;
+    }
+    return hex;
+  };
+
+  //turns rgb to hex
+  //https://campushippo.com/lessons/how-to-convert-rgb-colors-to-hexadecimal-with-javascript-78219fdb
+  fullColorHex = function(r,g,b) {   
+    var red = this.rgbToHex(r);
+    var green = this.rgbToHex(g);
+    var blue = this.rgbToHex(b);
+    return red+green+blue;
   };
 
   //makes API call to Clarifai and Google for image colors & style detection
@@ -51,11 +87,11 @@ export default class HomeScreen extends React.Component {
 
         ImageEditor.cropImage(image, imageSettings, (uri) => {
             ImageStore.getBase64ForTag(uri, (data) => {
-                //this.submitToGoogle(data);
+                this.submitToGoogle(data);
                 app.models.predict(Clarifai.APPAREL_MODEL, {base64: data}).then(
                     function(response) {
-                      console.log("Clarifai result: "+ response.outputs[0].data.concepts[0].name);
-                      console.log("Clarifai result value: "+response.outputs[0].data.concepts[0].value);
+                      //console.log("Clarifai result: "+ response.outputs[0].data.concepts[0].name);
+                      //console.log("Clarifai result value: "+response.outputs[0].data.concepts[0].value);
                     }
                 );
             }, e => console.warn("getBased64ForTag: ", e))
@@ -93,7 +129,19 @@ export default class HomeScreen extends React.Component {
         }
       );
       let responseJson = await response.json();
-      console.log(responseJson);
+      console.log(responseJson.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color);
+      
+      //storing to pass to function which changes them to a hex value
+      var red = responseJson.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color.red;
+      var green = responseJson.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color.green;
+      var blue = responseJson.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color.blue;
+      
+      //hex value of detected color
+      var hex = this.fullColorHex(red,green,blue);
+
+      //attempts to find a name for the color, if not found, it returns the hex number again
+      //console.log(Chroma(hex).name());
+      var color = namer(hex, {pick: ['basic']});
       this.setState({
         googleResponse: responseJson,
         uploading: false
@@ -113,8 +161,13 @@ export default class HomeScreen extends React.Component {
         var image = result['uri'];
         this.submitToClarifai(image);
       }});
+      //opens up the modal that states the clothing item has been scanned
     }
   };
+
+  componentWillUnmount() {
+    this._isMounted = false;
+  }
 
 
   async componentDidMount(){
@@ -146,7 +199,7 @@ export default class HomeScreen extends React.Component {
         
           <TouchableOpacity style = {styles.headerContainer}>
             <MaterialCommunityIcons 
-              onPress={()=>{console.log("hey")}}
+              onPress={()=>{console.log("here");}}
               name="close-circle"
               style={styles.backButtonStyle}>
             </MaterialCommunityIcons>
@@ -223,6 +276,40 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
 
+  homeButtonText: {
+    color: '#ffffff',
+    fontFamily: 'roboto-reg',
+    fontSize: 20,
+    letterSpacing: 5,
+    textAlign: 'center',
+    paddingTop: 13,
+    paddingBottom: 15
+    
+  },
+  
+  innerModalContainer: {
+    backgroundColor: 'rgba(255, 255, 255, 0.9)',
+    borderRadius: 10,
+    marginTop: 150,
+    marginLeft: 15,
+    marginRight: 15, 
+    height: '50%',
+  },
+
+  modalContainer: {
+    flex: 1,
+    //backgroundColor: "rgba(0,0,0,0.5)",
+  },
+
+  okayButton: {
+    backgroundColor: '#486556',
+    borderRadius: 8,
+    color: "#ffffff",
+    height: 50,
+    width: 288,
+    marginTop: 50
+
+  },
   takePictureButton: {
     color: 'white',
     fontSize: 100,
