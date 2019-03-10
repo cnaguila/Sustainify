@@ -20,20 +20,17 @@ import { WebBrowser, Camera, Permissions } from 'expo';
 import { MonoText } from '../components/StyledText';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
-import Chroma from 'chroma-js';
 import Environment from "../config/environment";
 
-
+//color namer
 var namer = require('color-namer');
 
+//style detection api
 const Clarifai = require('clarifai');
-
-
 
 const app = new Clarifai.App({
     apiKey: 'd43e615790234f3ab5acce84ba3bd55f'
 });
-
 
 
 export default class HomeScreen extends React.Component {
@@ -47,9 +44,8 @@ export default class HomeScreen extends React.Component {
     type: Camera.Constants.Type.back,
     pictureTaken: false,
     googleResponse: null,
-    clothesType: null,
-    colorName: null,
     modalVisible: false,
+    clothes: "",
   };
 
   //modal functions
@@ -76,31 +72,40 @@ export default class HomeScreen extends React.Component {
     return red+green+blue;
   };
 
+
   //makes API call to Clarifai and Google for image colors & style detection
-  submitToClarifai = (result) =>{
-    var image = result;
+  submitToClarifai = (image) =>{
+    var item;
     Image.getSize(image, (width, height) => {
         let imageSettings = {
             offset: {x: 0, y: 0},
-            size: {width: width, height: width}
+            size: {width: width, height: height}
         };
 
+        //crops image and returns URI as base64
         ImageEditor.cropImage(image, imageSettings, (uri) => {
             ImageStore.getBase64ForTag(uri, (data) => {
-                this.submitToGoogle(data);
-                app.models.predict(Clarifai.APPAREL_MODEL, {base64: data}).then(
-                    function(response) {
-                      //console.log("Clarifai result: "+ response.outputs[0].data.concepts[0].name);
-                      //console.log("Clarifai result value: "+response.outputs[0].data.concepts[0].value);
-                    }
-                );
+
+              //call to Clarifai API, returns a promise 
+              app.models.predict(Clarifai.APPAREL_MODEL, {base64: data}).then((response)=>{
+                  this.setState({
+                    clothes: response.outputs[0].data.concepts[0].name,
+                  }, ()=>{
+                    console.log(this.state.clothes);
+                    this.submitToColorNamer(data);
+                  })
+                }
+              )
+              
             }, e => console.warn("getBased64ForTag: ", e))
         }, e => console.warn("cropImage: ", e))
     })
   }
 
+  
+
   //makes api call to google to retrieve image colors
-  submitToGoogle = async (encoded_content) => {
+  submitToColorNamer = async (encoded_content) => {
     try {
       this.setState({ uploading: true });
       //let { image } = this.state;
@@ -129,9 +134,10 @@ export default class HomeScreen extends React.Component {
         }
       );
       let responseJson = await response.json();
-      console.log(responseJson.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color);
+      //console.log(responseJson.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color);
       
-      //storing to pass to function which changes them to a hex value
+      
+    //storing to pass to function which changes them to a hex value
       var red = responseJson.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color.red;
       var green = responseJson.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color.green;
       var blue = responseJson.responses[0].imagePropertiesAnnotation.dominantColors.colors[0].color.blue;
@@ -139,17 +145,51 @@ export default class HomeScreen extends React.Component {
       //hex value of detected color
       var hex = this.fullColorHex(red,green,blue);
 
-      //attempts to find a name for the color, if not found, it returns the hex number again
-      //console.log(Chroma(hex).name());
-      var color = namer(hex, {pick: ['basic']});
+      //returns the color name of hex value
+      var color = namer(hex, {pick: ['basic']}).basic[0].name;
+      console.log("color: "+ color);
+      // console.log("clothes: "+ this.state.clothes);
+      
+      
+      //sends queries to shopstyle api
+      this.queryShopStyle('everlane', color, this.state.clothes);
+      
       this.setState({
         googleResponse: responseJson,
-        uploading: false
+        uploading: false,
       });
     } catch (error) {
       console.log(error);
     }
   };
+
+
+  queryShopStyle = (brand, color, item) => {
+    var URL = 'http://api.shopstyle.com/api/v2';
+    var endpoint = '/products';
+    var apiKey = "?pid=uid3156-3365966-87";
+    var search_query = "&fts=" + brand+ "+" + color + "+" + item;
+
+    var apiUrl = URL + endpoint + apiKey + search_query;
+    console.log("in the api call");
+    console.log(apiUrl);
+
+    var response = fetch(apiUrl, {
+      method: 'GET', 
+      headers: {
+        Accept: 'application/json', 
+        'Content-Type': 'application/json'
+      } 
+    }).then( (res) => res.json())
+    .then((responseJson) => {
+      console.log(responseJson);
+    })
+    .catch((error) => {
+      console.log(error); 
+    }); 
+  }
+  
+
   
   takePicture = () => {
     this.setState({
@@ -158,10 +198,11 @@ export default class HomeScreen extends React.Component {
     if (this.camera) {
       console.log('take picture');
       this.camera.takePictureAsync({onPictureSaved: (result)=> {
-        var image = result['uri'];
-        this.submitToClarifai(image);
+        this.submitToClarifai(result['uri']);
+        // this.submitToColorNamer()
+        //this.queryShopStyle("everlane", color, this.state.clothesType);
+        
       }});
-      //opens up the modal that states the clothing item has been scanned
     }
   };
 
