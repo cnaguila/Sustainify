@@ -46,6 +46,7 @@ export default class HomeScreen extends React.Component {
     googleResponse: null,
     modalVisible: false,
     clothes: "",
+    result: "",
   };
 
   //modal functions
@@ -151,7 +152,7 @@ export default class HomeScreen extends React.Component {
       // console.log("clothes: "+ this.state.clothes);
       
       
-      //sends queries to shopstyle api
+      //sends queries to shopstyle api, but doesn't go through ??
       this.queryShopStyle('everlane', color, this.state.clothes);
       
       this.setState({
@@ -182,7 +183,28 @@ export default class HomeScreen extends React.Component {
       } 
     }).then( (res) => res.json())
     .then((responseJson) => {
-      console.log(responseJson);
+
+
+      console.log("picture url: "+responseJson.products[0].colors[0].image.sizes.Best.url);
+      console.log("product name: "+responseJson.products[0].brandedName);
+      console.log("website url: "+responseJson.products[0].clickUrl);
+      console.log("price: "+ responseJson.products[0].priceLabel);
+
+      const { navigate } = this.props.navigation;
+      // navigate('Display', {json: responseJson});
+
+      this.setState({
+        result: responseJson
+      }, ()=>{
+        navigate('Display', {json: this.state.result});
+      })
+
+      // var result = {};
+      // result.brand = responseJson.products[0].brand.name;
+      // result.productName = responseJson.products[0].brandedName;
+      // result.webURL = responseJson.products[0].clickUrl;
+      // result.price = responseJson.products[0].priceLabel;
+      // result.imageURL = responseJson.products[0].colors[0].image.sizes.Best.url;
     })
     .catch((error) => {
       console.log(error); 
@@ -199,9 +221,6 @@ export default class HomeScreen extends React.Component {
       console.log('take picture');
       this.camera.takePictureAsync({onPictureSaved: (result)=> {
         this.submitToClarifai(result['uri']);
-        // this.submitToColorNamer()
-        //this.queryShopStyle("everlane", color, this.state.clothesType);
-        
       }});
     }
   };
