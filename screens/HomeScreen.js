@@ -11,8 +11,9 @@ import {
   View,
 } from 'react-native';
 import { WebBrowser } from 'expo';
-import AppIntroSlider from 'react-native-app-intro-slider';
 
+/*ADD ON*/
+import AppIntroSlider from 'react-native-app-intro-slider';
 
 import { MonoText } from '../components/StyledText';
 
@@ -24,6 +25,8 @@ export default class HomeScreen extends React.Component {
     header: null,
   };
 
+
+/*ADD ON*/
   state = {
     showRealApp: false
   };
@@ -31,6 +34,7 @@ export default class HomeScreen extends React.Component {
 
   render() {
 
+    /*ADD ON*/
     if (!this.state.showRealApp) {
       return (
         <AppIntroSlider slides={slides} 
@@ -199,6 +203,7 @@ const styles = StyleSheet.create({
   }
 });
 
+/*ADD ON TILL THE BOTTOM*/
 const slide_styles = StyleSheet.create({
   image: {
     width: 200,
