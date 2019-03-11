@@ -4,7 +4,7 @@ import { createAppContainer, createSwitchNavigator } from 'react-navigation';
 import MainTabNavigator from './MainTabNavigator';
 import HomeScreen from '../screens/HomeScreen';
 import OptionScreen from '../screens/OptionScreen';
-import DisplayImage from '../screens/DisplayImage';
+import DisplayData from '../screens/DisplayData';
 
 export default createAppContainer(createSwitchNavigator({
   // You could add another route here for authentication.
@@ -12,5 +12,5 @@ export default createAppContainer(createSwitchNavigator({
   Main: MainTabNavigator,
   Home: HomeScreen,
   Option: OptionScreen,
-  Display: DisplayImage,
+  Display: DisplayData,
 }));
