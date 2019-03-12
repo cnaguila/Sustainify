@@ -11,9 +11,8 @@ import {
   View,
 } from 'react-native';
 import { WebBrowser } from 'expo';
-
-/*ADD ON*/
 import AppIntroSlider from 'react-native-app-intro-slider';
+
 
 import { MonoText } from '../components/StyledText';
 
@@ -25,24 +24,25 @@ export default class HomeScreen extends React.Component {
     header: null,
   };
 
-
-/*ADD ON*/
   state = {
-    showRealApp: false
+    showRealApp: false,
+    showSkipButton: true
   };
-
 
   render() {
 
-    /*ADD ON*/
     if (!this.state.showRealApp) {
       return (
         <AppIntroSlider slides={slides} 
       onDone={() => {
         this.setState({showRealApp: true});
+      }}
+      showSkipButton={true}
+      onSkip={() => {
+        this.setState({showRealApp: true})
       }}/>
-      )
-    } else {
+      )}
+     else {
 
     return (
       <View style={styles.container}>
@@ -73,7 +73,8 @@ export default class HomeScreen extends React.Component {
                 
                 <Text style={styles.infoText}>Look at saved recommendations</Text>
                 <TouchableOpacity style={styles.closetButton}>
-                  <Text style={styles.homeButtonText}>my closet</Text>
+                  <Text style={styles.homeButtonText}
+                  onPress={()=> this.props.navigation.navigate("Closet")}>my closet</Text>
                 </TouchableOpacity>
               </View>
             </ImageBackground>
@@ -203,7 +204,6 @@ const styles = StyleSheet.create({
   }
 });
 
-/*ADD ON TILL THE BOTTOM*/
 const slide_styles = StyleSheet.create({
   image: {
     width: 200,
@@ -317,3 +317,5 @@ const slides = [
 
 
 ]
+
+
