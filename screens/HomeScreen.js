@@ -14,7 +14,7 @@ import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
 
-import {createStackNavigator, createAppContainer} from 'react-navigation';
+
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -33,13 +33,12 @@ export default class HomeScreen extends React.Component {
           <Text style={styles.navBarText}> SUSTAINIFY </Text>
         </View>
 
-        <View style={styles.contentContainer}>
-          <View style= {styles.content}>
+        <View style = {styles.contentContainer}>
+          <View style = {styles.content}>
             <ImageBackground 
               source={require("../assets/images/ScanBackground.jpg")}
               style = {styles.scanImage}
               imageStyle = {{resizeMode: 'stretch'}}>
-            
               <View style={styles.buttonContainer}>
                 <Text style={styles.infoText}>Look for sustainable options</Text>
 
@@ -98,7 +97,8 @@ export default class HomeScreen extends React.Component {
 const styles = StyleSheet.create({
   buttonContainer: {
     flexDirection: 'column',
-    alignItems: 'center'
+    alignItems: 'center',
+    // backgroundColor: 'rgba(255, 255, 255, 0.7)',
   },
 
   closetButton: {
@@ -112,7 +112,8 @@ const styles = StyleSheet.create({
   },
 
   content: {
-    alignItems: 'center'
+    alignItems: 'center',
+    backgroundColor: 'rgba(255,255,255,0.9)',
   },
 
   contentContainer: {
@@ -120,7 +121,7 @@ const styles = StyleSheet.create({
   },
 
   infoText: {
-    color: '#ffffff',
+    color: '#fff',
     fontFamily: 'roboto-bold-italic',
     fontSize: 25,
     paddingTop: 100,
@@ -130,14 +131,7 @@ const styles = StyleSheet.create({
   navBar: {
     flexDirection: 'row',
     height: 100,
-    backgroundColor: '#b2bfa3',
-  },
-
-  navBarImage: {
-    height: 50,
-    width: 50,
-    marginTop: 25,
-    marginLeft: 25
+    backgroundColor: '#677C69',
   },
 
   navBarText: {
@@ -151,7 +145,7 @@ const styles = StyleSheet.create({
   },
 
   phoneInfoContainer: {
-    backgroundColor: "#3c4858",
+    backgroundColor: "#677C69",
     height: 20,
   },
 
@@ -170,7 +164,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     letterSpacing: 5,
     textAlign: 'center',
-    paddingTop: 13,
+    paddingTop: Platform.OS === 'ios' ? 13: 9,
     paddingBottom: 15
     
   },

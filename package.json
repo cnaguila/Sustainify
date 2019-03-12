@@ -12,12 +12,19 @@
   },
   "dependencies": {
     "@expo/samples": "2.1.1",
-    "base64-img": "^1.0.4",
+    "algorithmia": "^0.3.10",
+    "chroma-js": "^2.0.3",
     "clarifai": "^2.9.0",
+    "color-namer": "^1.3.0",
     "expo": "^32.0.0",
+    "node-libs-browser": "^2.2.0",
     "react": "16.5.0",
     "react-native": "https://github.com/expo/react-native/archive/sdk-32.0.0.tar.gz",
-    "react-navigation": "^3.0.9"
+    "react-native-elements": "^1.1.0",
+    "react-native-meteor": "^1.4.0",
+    "react-navigation": "^3.0.9",
+    "shopstyle-sdk": "^1.1.1",
+    "unirest": "^0.6.0"
   },
   "devDependencies": {
     "babel-preset-expo": "^5.0.0",
