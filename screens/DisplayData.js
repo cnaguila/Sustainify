@@ -13,7 +13,7 @@ import {
 import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
-//import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {createStackNavigator, createAppContainer} from 'react-navigation';
 
 import { 
@@ -36,6 +36,7 @@ export default class DisplayImage extends React.Component {
 
 
   handleJson(response) {
+    const { navigate } = this.props.navigation;
     return response.products.map((product, index) => {
         return (
           <Card 
@@ -46,8 +47,10 @@ export default class DisplayImage extends React.Component {
               key={index}
               activeOpacity={0.7}
               onPress={()=>{
-                const { navigate } = this.props.navigation;
-                navigate('Product', {productImage: product.colors[0].image.sizes.Best.url, productName: product.brandedName, brand: product.brand.name, price: product.priceLabel, productURL: product.clickUrl})
+                this.setState({}, ()=>{
+                  navigate('Product', {productImage: product.colors[0].image.sizes.Best.url, productName: product.brandedName, 
+                    brand: product.brand.name, price: product.priceLabel, productURL: product.clickUrl, result: this.state.result, json: this.state.result})
+                })
               }}
               >
               <Image
@@ -65,6 +68,7 @@ export default class DisplayImage extends React.Component {
 
   render() {
     const { search } = this.state;
+    const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
         <View style={styles.phoneInfoContainer}>
@@ -72,7 +76,13 @@ export default class DisplayImage extends React.Component {
         </View>
 
         <View style={styles.navBar}>
-        
+          <TouchableOpacity>
+            <MaterialCommunityIcons 
+              onPress={()=>{navigate('Option')}}
+              name="chevron-left"
+              style={styles.backButtonStyle}>
+            </MaterialCommunityIcons>
+          </TouchableOpacity> 
           <Text style={styles.navBarText}> SUSTAINIFY </Text>
         </View>
 
@@ -91,6 +101,13 @@ export default class DisplayImage extends React.Component {
 }
 
 const styles = StyleSheet.create({
+  backButtonStyle: {
+    fontSize: 40,
+    marginTop: 30,
+    // marginLeft: 10,
+    color: '#ffffff',
+  },
+
   image: {
     height: 181,
     width: 193,
@@ -134,6 +151,7 @@ const styles = StyleSheet.create({
     fontSize: 50,
     letterSpacing: 5,
     paddingTop: 15,
+    paddingRight: 40,
     textAlign: 'center',
   },
 

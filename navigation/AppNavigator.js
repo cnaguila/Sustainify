@@ -7,6 +7,7 @@ import OptionScreen from '../screens/OptionScreen';
 import DisplayData from '../screens/DisplayData';
 import ProductPage from '../screens/ProductPage';
 import WebPage from '../screens/WebPage';
+import ClosetScreen from '../screens/ClosetScreen';
 
 export default createAppContainer(createSwitchNavigator({
   // You could add another route here for authentication.
@@ -17,4 +18,5 @@ export default createAppContainer(createSwitchNavigator({
   Display: DisplayData,
   Product: ProductPage,
   Web: WebPage,
+  Closet: ClosetScreen
 }));

@@ -19,22 +19,27 @@ import {
   Icon,
  } from 'react-native-elements';
 
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+import { NavigationActions } from 'react-navigation';
+
+
 
 export default class DisplayImage extends React.Component {
   static navigationOptions = {
     header: null,
   };
-
+  
   state = {
     productName: this.props.navigation.state.params.productName,
     productImage: this.props.navigation.state.params.productImage,
     brand: this.props.navigation.state.params.brand,
     price: this.props.navigation.state.params.price,
     url: this.props.navigation.state.params.productURL,
+    result: this.props.navigation.state.params.result,
   };
-
   render() {
     const { search } = this.state;
+    const { navigate } = this.props.navigation;
     return (
       <View style={styles.container}>
         <View style={styles.phoneInfoContainer}>
@@ -42,7 +47,16 @@ export default class DisplayImage extends React.Component {
         </View>
 
         <View style={styles.navBar}>
-        
+          <TouchableOpacity>
+              <MaterialCommunityIcons 
+                onPress={()=>{
+                  this.setState({
+                  },()=>{navigate("Display", {json: this.state.result, result: this.state.result})})
+                }}
+                name="chevron-left"
+                style={styles.backButtonStyle}>
+              </MaterialCommunityIcons>
+          </TouchableOpacity> 
           <Text style={styles.navBarText}> SUSTAINIFY </Text>
         </View>
 
@@ -64,7 +78,12 @@ export default class DisplayImage extends React.Component {
               <TouchableOpacity style={styles.scanButton}>
                   <Text 
                     style={styles.homeButtonText} 
-                    onPress={()=> this.props.navigation.navigate("Web", {url: this.state.url})}>Go to Store</Text>
+                    onPress={()=>{
+                      this.setState({}, ()=>{
+                        navigate("Web", {url: this.state.url, productImage: this.state.productImage, 
+                          productName: this.state.productName, brand: this.state.brand, price: this.state.price, productURL: this.state.url, result: this.state.result});
+                      })
+                    }}>Go to Store</Text>
                 </TouchableOpacity> 
              </Card>
             </ScrollView>
@@ -120,6 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 50,
     letterSpacing: 5,
     paddingTop: 15,
+    paddingRight: 40,
     textAlign: 'center',
   },
 
@@ -175,5 +195,12 @@ const styles = StyleSheet.create({
     height: 50,
     marginTop: 50,
     width: 288
+  },
+
+  backButtonStyle: {
+    fontSize: 40,
+    marginTop: 30,
+    // marginLeft: 10,
+    color: '#ffffff',
   },
 })

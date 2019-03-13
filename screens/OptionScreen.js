@@ -146,6 +146,8 @@ export default class HomeScreen extends React.Component {
       //hex value of detected color
       var hex = this.fullColorHex(red,green,blue);
 
+      // console.log(hex);
+
       //returns the color name of hex value
       var color = namer(hex, {pick: ['basic']}).basic[0].name;
       console.log("color: "+ color);
@@ -153,7 +155,7 @@ export default class HomeScreen extends React.Component {
       
       
       //sends queries to shopstyle api, but doesn't go through ??
-      this.queryShopStyle('everlane', 'black', 'turtleneck');
+      this.queryShopStyle('everlane', 'black', 'sweater');
       
       this.setState({
         googleResponse: responseJson,
@@ -241,28 +243,26 @@ export default class HomeScreen extends React.Component {
           this.camera = ref;
         }}>
 
-        <View style = {styles.viewContainer}>
+        {/* <View style = {styles.viewContainer}> */}
         
-          <View style = {styles.navBar}>
-            <TouchableOpacity>
-              <MaterialCommunityIcons 
-                onPress={()=>{navigate('Home')}}
-                name="close-circle"
-                style={styles.backButtonStyle}>
-              </MaterialCommunityIcons>
-            </TouchableOpacity> 
-          </View>
+          <TouchableOpacity>
+            <MaterialCommunityIcons 
+              onPress={()=>{navigate('Home')}}
+              name="close"
+              style={styles.backButtonStyle}>
+            </MaterialCommunityIcons>
+          </TouchableOpacity> 
+          
         
-          <View style={styles.cameraButtonsContainer}>
-            <TouchableOpacity>
-              <MaterialCommunityIcons
-                onPress={this.takePicture}
-                name="circle-outline"
-                style={styles.takePictureButton}>
-              </MaterialCommunityIcons>
-            </TouchableOpacity>
-          </View>
-        </View>
+        
+          <TouchableOpacity>
+            <MaterialCommunityIcons
+              onPress={this.takePicture}
+              name="circle-outline"
+              style={styles.takePictureButton}>
+            </MaterialCommunityIcons>
+          </TouchableOpacity>
+        {/* </View> */}
         </Camera>
       </View>
 
@@ -368,6 +368,8 @@ const styles = StyleSheet.create({
   takePictureButton: {
     color: 'white',
     fontSize: 100,
+    paddingTop: 565,
+    alignSelf: 'center',
   },
 
   viewContainer: {

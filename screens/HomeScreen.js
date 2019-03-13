@@ -13,7 +13,7 @@ import {
 import { WebBrowser } from 'expo';
 
 import { MonoText } from '../components/StyledText';
-
+import AppIntroSlider from 'react-native-app-intro-slider';
 
 
 export default class HomeScreen extends React.Component {
@@ -21,7 +21,25 @@ export default class HomeScreen extends React.Component {
     header: null,
   };
 
+  state = {
+    showRealApp: false,
+    showSkipButton: true
+  };
+
   render() {
+    if (!this.state.showRealApp) {
+      return (
+        <AppIntroSlider slides={slides} 
+      onDone={() => {
+        this.setState({showRealApp: true});
+      }}
+      showSkipButton={true}
+      onSkip={() => {
+        this.setState({showRealApp: true})
+      }}/>
+      )}
+     else {
+
     return (
       <View style={styles.container}>
         <View style={styles.phoneInfoContainer}>
@@ -33,12 +51,13 @@ export default class HomeScreen extends React.Component {
           <Text style={styles.navBarText}> SUSTAINIFY </Text>
         </View>
 
-        <View style = {styles.contentContainer}>
-          <View style = {styles.content}>
+        <View style={styles.contentContainer}>
+          <View style= {styles.content}>
             <ImageBackground 
               source={require("../assets/images/ScanBackground.jpg")}
               style = {styles.scanImage}
               imageStyle = {{resizeMode: 'stretch'}}>
+            
               <View style={styles.buttonContainer}>
                 <Text style={styles.infoText}>Look for sustainable options</Text>
 
@@ -50,16 +69,16 @@ export default class HomeScreen extends React.Component {
                 
                 <Text style={styles.infoText}>Look at saved recommendations</Text>
                 <TouchableOpacity style={styles.closetButton}>
-                  <Text style={styles.homeButtonText}>my closet</Text>
+                  <Text style={styles.homeButtonText}
+                  onPress={()=> this.props.navigation.navigate("Closet")}>my closet</Text>
                 </TouchableOpacity>
               </View>
             </ImageBackground>
           </View>
         </View>
       </View>
-    );
+    );}
   }
-
   _maybeRenderDevelopmentModeWarning() {
     if (__DEV__) {
       const learnMoreButton = (
@@ -174,3 +193,114 @@ const styles = StyleSheet.create({
     width: '195%',
   }
 });
+
+const slide_styles = StyleSheet.create({
+  image: {
+    width: 200,
+    height: 200,
+  },
+  text: {
+    fontFamily: 'lato-reg',
+    color: '#FFFFFF',
+    fontSize: 18,
+    textAlign: 'center',
+    marginBottom: 50,
+    
+  },
+  title: {
+    fontFamily: 'bree-serif',
+    fontSize: 28,
+    color: '#47525E',
+    textAlign: 'center',
+    marginTop: 50,
+  }
+});
+
+const slides = [
+  {
+    key: 'intro',
+    image: require('../assets/images/welcome.png'),
+    backgroundColor: '#B2BFA3'
+  },
+
+  {
+    key: 's1',
+    image: require('../assets/images/globe.png'),
+    text: '"Sustainability is meeting our present needs without compromising the ability of futurre generations to meet their ouwn needs."                 -UNT Health Science',
+    textStyle: slide_styles.text,
+    title: 'What is sustainability?',
+    titleStyle: slide_styles.title,
+    backgroundColor: '#86A86D'
+  },
+
+  {
+    key: 's2',
+    image: require('../assets/images/tree.png'),
+    text: 'Sustainability focuses heavily on environmental protection. "Environmental protection entails examining how our use of the environment affects it, and how we can ensure that negative effects are minimized and behaviors that positively impact the environment are emphasized."   -Permaculture Research Institute',
+    textStyle: slide_styles.text,
+    title: 'Why is sustainability important?',
+    titleStyle: slide_styles.title,
+    backgroundColor: '#86A86D'
+  },
+
+  {
+  key: 's3',
+  image: require('../assets/images/wasteclothes.png'),
+  text: 'Fast fashion is inexpensive clothing produced rapidly by mass-market retailers in response to the latest trends. Fast fashion is known to be environmentally disastrous.',
+  textStyle: slide_styles.text,
+  title: 'What is fast fashion?',
+  titleStyle: slide_styles.title,
+  backgroundColor: '#86A86D'
+},
+
+{
+  key: 's4',
+  image: require('../assets/images/fastfashion.png'),
+  text: 'Fast fashion contributes to waste accumulation, greenhouse gas emissions, and other environmental hazards. These problems all contribute to climate change and the destruction of natural resources.',
+  textStyle: slide_styles.text,
+  title: 'Why is fast fashion bad for the environment?',
+  titleStyle: slide_styles.title,
+  backgroundColor: '#86A86D'
+},
+
+{
+  key: 's4.1',
+  image: require('../assets/images/waste.png'),
+  text: 'Fast fashion is easily disposable and generates textile waste. The average family throws away 30 kg of clothing each year, going directly to landfills.',
+  textStyle: slide_styles.text,
+  title: 'Fast Fashion: Waste Accumulation',
+  titleStyle: slide_styles.title,
+  backgroundColor: '#86A86D'
+},
+
+{
+  key: 's4.2',
+  image: require('../assets/images/co.png'),
+  text: 'The synthetic fibers used for cheap cothing can take up to 200 years to decompose. Synthetic fibers are also made from fossil fuel, making clothing energy-intensive. These fibers emit gases like CO2 which are damaging to our atmosphere.',
+  textStyle: slide_styles.text,
+  title: 'Fast Fashion: Greenhouse Gas Emissions',
+  titleStyle: slide_styles.title,
+  backgroundColor: '#86A86D'
+},
+
+{
+  key: 's5',
+  image: require('../assets/images/sustainableclothes.png'),
+  text: '"...clothing, shoes and accessories that are manufactured, marketed abd used in the most sustainable manner possible, taking into accout both environmental and socio-economic aspects."  -Green Strategy',
+  textStyle: slide_styles.text,
+  title: 'What is sustainable fashion?',
+  titleStyle: slide_styles.title,
+  backgroundColor: '#86A86D'
+},
+
+{
+  key: 's6',
+  image: require('../assets/images/howto.png'),
+  text: 'Our app helps users find sustainable clothing options. Simply scan a clothing item you own and our app will find similar looking items from brands that are environmentally-friendly.',
+  textStyle: slide_styles.text,
+  title: 'How does Sustainify help?',
+  titleStyle: slide_styles.title,
+  backgroundColor: '#86A86D'
+},
+]
+

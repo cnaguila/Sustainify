@@ -47,6 +47,8 @@ export default class App extends React.Component {
         'roboto-med': require('./assets/fonts/Roboto-Medium.ttf'),
         'roboto-reg': require('./assets/fonts/Roboto-Regular.ttf'),
         'roboto-bold-italic': require('./assets/fonts/Roboto-BoldItalic.ttf'),
+        'bree-serif': require('./assets/fonts/BreeSerif-Regular.ttf'),
+        'lato-reg': require('./assets/fonts/Lato-Regular.ttf')
       }),
     ]);
   };
@@ -65,6 +67,6 @@ export default class App extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#677C69',
+    backgroundColor: '#ffffff',
   },
 });
