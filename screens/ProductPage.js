@@ -29,15 +29,7 @@ export default class DisplayImage extends React.Component {
     header: null,
   };
   
-  state = {
-    productName: this.props.navigation.state.params.productName,
-    productImage: this.props.navigation.state.params.productImage,
-    brand: this.props.navigation.state.params.brand,
-    price: this.props.navigation.state.params.price,
-    url: this.props.navigation.state.params.productURL,
-    result: this.props.navigation.state.params.result,
-  };
-  render() {
+   render() {
     const { search } = this.state;
     const { navigate } = this.props.navigation;
     return (
@@ -59,10 +51,10 @@ export default class DisplayImage extends React.Component {
           </TouchableOpacity> 
           <Text style={styles.navBarText}> SUSTAINIFY </Text>
         </View>
+        <ScrollView>
 
         <View style = {styles.contentContainer}>
           <View style = {styles.content}>
-            <ScrollView>
              <Card 
               containerStyle={styles.cardContainer}
               >
@@ -75,6 +67,32 @@ export default class DisplayImage extends React.Component {
               <Text style={styles.brandName}> {this.state.brand} </Text>
               <Text style={styles.productName}> {this.state.productName.substring(8)} <Text style={styles.price}> {this.state.price} </Text> </Text>
 
+              <Text style={styles.rating}>About Brand</Text>
+
+              <Text style={styles.topics}>Eco-Friendly Material</Text>
+              <View style={styles.outerbar}>
+                <View style={styles.innerbareco}>
+                </View>
+              </View>
+              <Text style={styles.explainText}>Everlane has uses eco-friendly materials for their clothing, including recycled fabrics.</Text>
+
+
+
+              <Text style={styles.topics}>Renewable Energy</Text>
+              <View style={styles.outerbar}>
+                <View style={styles.innerbarenergy}>
+                </View>
+              </View>
+              <Text style={styles.explainText}>It reduces its climate impact by consuming renewable energy in its supply chain.</Text>
+
+
+              <Text style={styles.topics}>Cruelty Free</Text>
+              <View style={styles.outerbar}>
+                <View style={styles.innerbarcruelty}>
+                </View>
+              </View>
+              <Text style={styles.explainText}>Everlane has a poor animal cruelty rating it still uses leather and wool in some of its products.</Text>
+
               <TouchableOpacity style={styles.scanButton}>
                   <Text 
                     style={styles.homeButtonText} 
@@ -86,10 +104,10 @@ export default class DisplayImage extends React.Component {
                     }}>Go to Store</Text>
                 </TouchableOpacity> 
              </Card>
-            </ScrollView>
 
           </View>
         </View>
+        </ScrollView>
       </View>
     );
   }
@@ -108,7 +126,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     backgroundColor: '#E2E2E3',
     width: '100%',
-    height: '100%',
+    height: 990,
   },
 
   container: {
@@ -150,7 +168,7 @@ const styles = StyleSheet.create({
 
   //card container
   cardContainer: {
-    height: 544,
+    height: 820,
     width: 326,
     borderRadius: 6,
   },
@@ -168,6 +186,7 @@ const styles = StyleSheet.create({
     fontSize: 21,
     textAlign: 'center',
     paddingTop: 5,
+    paddingBottom: 5
   },
 
   price: {
@@ -175,6 +194,54 @@ const styles = StyleSheet.create({
     fontSize: 13,
     textAlign: 'right',
     paddingTop: 5,
+    paddingBottom: 5
+  },
+
+  rating: {
+    marginTop: 25,
+    fontSize: 20,
+    fontFamily: 'roboto-med',
+    marginBottom: 5,
+  },
+
+  topics: {
+    fontSize: 18,
+    marginTop: 5,
+    marginBottom: 10
+  },
+
+
+
+  outerbar: {
+    height: 5,
+    width: 250,
+    backgroundColor: '#E5E9F2',
+    marginBottom: 5,
+
+  },
+  innerbareco: {
+    height: 5,
+    width: 245,
+    backgroundColor: '#8190A5',
+    marginBottom: 5,
+  },
+
+  innerbarenergy: {
+    height: 5,
+    width: 175,
+    backgroundColor: '#8190A5',
+    marginBottom: 5,
+  },
+
+  innerbarcruelty: {
+    height: 5,
+    width: 100,
+    backgroundColor: '#8190A5',
+    marginBottom: 5,
+  },
+
+  explainText: {
+    marginBottom: 18
   },
 
   //button styling
@@ -193,8 +260,8 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     color: "#ffffff",
     height: 50,
-    marginTop: 50,
-    width: 288
+    width: 288,
+    marginTop: 20
   },
 
   backButtonStyle: {
