@@ -1,7 +1,6 @@
 # Sustainify
 
-npm install react-native
-npm install expo-cli
-npm install clarifai
-npm install color-namer 
-npm install --save shopstyle-sdk
+clone the repo \
+go into the projects directory \
+install dependencies: npm react-native expo-cli clarifai color-namer lottie-react-native \
+npm start 
