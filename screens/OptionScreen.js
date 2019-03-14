@@ -3,6 +3,8 @@
 
 import React from 'react';
 import {
+  Animated,
+  Easing,
   Button,
   Image,
   ImageStore,
@@ -21,6 +23,7 @@ import { MonoText } from '../components/StyledText';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import Environment from "../config/environment";
+import LottieView from 'lottie-react-native';
 
 //color namer
 var namer = require('color-namer');
@@ -32,12 +35,29 @@ const app = new Clarifai.App({
     apiKey: 'd43e615790234f3ab5acce84ba3bd55f'
 });
 
+//facts
+var facts = ["The apparel and footwear industries account for a combined estimate of 8% of the world’s greenhouse gas emissions, and fashion is the third highest-polluting industry in the world.",
+"A 2016 McKinsey report revealed that three-fifths of all clothing items will end up in an incinerator or landfill within a year after being produced.",
+"If we keep this up, by 2050 the fashion industry could use more than 26 percent of the “carbon budget” associated with a 2o C pathway (a long-term goal to limit global warming to less than 2°C above pre-industrial levels).",
+"We don’t really wear our clothes. Worldwide, clothing utilization (how often we put something on) has decreased by 36 percent compared to 15 years ago.",
+"It’s estimated that less than 1 percent of material used to produce clothing is recycled into something more. That’s about a loss of 100 billion USD worth of materials every year.",
+"By 2030, it’s expected that fashion waste will increase to a 148 million ton problem.",
+"According to the Global Fashion Agenda, 26 percent of business owners surveyed believe that “low consumer willingness to pay a premium for sustainable products” was the greatest barrier for them to become more sustainable.",
+"…But consumer attitudes for ethical fashion are increasingly favorable. Sixty percent of millennials say they want to shop more 'sustainably.'",
+"Many brands are moving to more sustainable production methods. As of May 2018, 12.5 percent of the global fashion market has pledged to make changes by 2020.",
+"The clothing brand Patagonia was the first to make polyester fleece out of plastic bottles.",
+"Cotton, a popular material in clothing, requires high levels of water and pesticides, which cause issues in developing countries.",
+"About 2,000 different chemicals are used in textile processing — yet only 16 are approved by the Environmental Protection Agency.",
+"According to the United Nations Economic Commission for Europe, the fashion industry produces 20 percent of global wastewater.",
+"Only 15 percent of consumers recycle their used clothing."];
+
+var intervalID = 0;
+
 
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
     header: null,
   };
-
 
   state = {
     hasCameraPermission: null,
@@ -47,6 +67,8 @@ export default class HomeScreen extends React.Component {
     modalVisible: false,
     clothes: "",
     result: "",
+    loading: false,
+    factIndex: 0,
   };
 
   //modal functions
@@ -76,7 +98,13 @@ export default class HomeScreen extends React.Component {
 
   //makes API call to Clarifai and Google for image colors & style detection
   submitToClarifai = (image) =>{
-    var item;
+    
+    this.setState(
+      {
+        loading: true
+      }, () => {console.log("after picture taken: ", this.state.loading);}
+    ); 
+
     Image.getSize(image, (width, height) => {
         let imageSettings = {
             offset: {x: 0, y: 0},
@@ -103,7 +131,6 @@ export default class HomeScreen extends React.Component {
     })
   }
 
-  
 
   //makes api call to google to retrieve image colors
   submitToColorNamer = async (encoded_content) => {
@@ -155,7 +182,7 @@ export default class HomeScreen extends React.Component {
       
       
       //sends queries to shopstyle api, but doesn't go through ??
-      this.queryShopStyle('everlane', 'black', 'sweater');
+      this.queryShopStyle('everlane', color, this.state.clothes);
       
       this.setState({
         googleResponse: responseJson,
@@ -188,7 +215,8 @@ export default class HomeScreen extends React.Component {
       const { navigate } = this.props.navigation;
 
       this.setState({
-        result: responseJson
+        result: responseJson,
+        loading: false
       }, ()=>{
         navigate('Display', {json: this.state.result});
       })
@@ -198,11 +226,10 @@ export default class HomeScreen extends React.Component {
     }); 
   }
   
-
-  
   takePicture = () => {
+    console.log("before picture taken: ", this.state.loading);
     this.setState({
-      pictureTaken: true,
+      pictureTaken: true
     });
     if (this.camera) {
       console.log('take picture');
@@ -212,19 +239,46 @@ export default class HomeScreen extends React.Component {
     }
   };
 
+
   componentWillUnmount() {
     this._isMounted = false;
+    clearInterval(intervalID);
   }
-
 
   async componentDidMount(){
     const { status } = await Permissions.askAsync(Permissions.CAMERA);
     this.setState({ hasCameraPermission: status === "granted"});
+    
+    intervalID = setInterval(()=>{
+      if (this.state.factIndex === 13)
+      {
+        this.setState({factIndex: 0})
+      }
+      this.setState({factIndex: this.state.factIndex+1})
+    },5500);
+  
   }
 
   render() {
     const { hasCameraPermission } = this.state;
     const { navigate } = this.props.navigation;
+  
+    if (this.state.loading) {
+      return (
+        <View style={loading_style.container}> 
+          <LottieView
+            source={require('../assets/images/loading.json')}
+            autoPlay={true}
+            loop={true}
+            style={loading_style.loadingBar}
+            />
+          <Text style={loading_style.factTitle}> Did You Know? </Text>
+          <View style={loading_style.textContainer}>
+            <Text style={loading_style.factText}> {facts[this.state.factIndex]} </Text>
+          </View>
+        </View>
+      );
+    }
     if (hasCameraPermission === null )
     {
       return <View />;
@@ -378,3 +432,44 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   }
 });
+
+const loading_style = StyleSheet.create({
+  container: {
+    backgroundColor: '#677C69',
+    height: '100%',
+    width: '100%',
+  },
+
+  loadingBar: {
+    height: '50%',
+    width: '50%',
+    marginLeft: 40,
+    marginTop: 50,
+  },
+
+  factText: {
+    fontFamily: 'roboto-med',
+    fontSize: 20,
+    textAlign: 'center',
+    paddingBottom: 10,
+  },
+  
+  factTitle: {
+    color: '#ffffff',
+    fontFamily: 'abril-fatface',
+    fontSize: 40,
+    paddingBottom: 20,
+    textAlign: 'center',
+  },
+  
+  textContainer: {
+    backgroundColor: 'rgba(255,255,255,0.7)',
+    marginBottom: 100,
+    paddingLeft: 32,
+    paddingRight: 32,
+    paddingTop: 10,
+    width: 375,
+    alignSelf: 'center',
+    borderRadius: 10,
+  },
+})
