@@ -243,7 +243,7 @@ const styles = StyleSheet.create({
   navBar: {
     flexDirection: 'row',
     height: 100,
-    backgroundColor: '#b2bfa3',
+    backgroundColor: '#677C69',
   },
 
   navBarImage: {
@@ -264,7 +264,7 @@ const styles = StyleSheet.create({
   },
 
   phoneInfoContainer: {
-    backgroundColor: "#3c4858",
+    backgroundColor: "#677C69",
     height: 20,
   },
 
